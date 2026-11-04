@@ -1,0 +1,31 @@
+# ~/.config/screentime/config.toml — every key is optional; these are the defaults.
+
+# device = ""             # name used for pushes (empty: the hostname)
+# database = ""           # empty: ~/.local/share/screentime/screentime.db
+# idle_timeout = 180      # seconds without input before time stops counting
+# trim_idle = true        # and take those idle seconds back off the session
+# track_titles = false    # also store window titles (off: only the app class is saved)
+# poll_interval = 5       # seconds between lock / screen-off / suspend checks
+# min_session = 1.0       # ignore focus flashes shorter than this
+# lockers = ["hyprlock", "swaylock", "gtklock", "waylock"]
+# week_start = "monday"   # or "sunday"
+# ignore = []             # window classes (globs) never counted
+
+# Categories: glob patterns on the lower-cased window class. Yours are checked before the
+# built-in list (see screentime/config.py). Social, Games, Entertainment, Web, Development,
+# Productivity, Creativity, Education, Utilities, Other.
+[categories]
+# "steam_app_*" = "Games"
+# "obsidian" = "Education"
+
+# Display names for classes that aren't readable as they are.
+[names]
+# "org.vinegarhq.sober" = "Roblox"
+
+# Optional: POST each day's summary to a dashboard. Days that fail (offline, asleep, away from
+# home) are queued in the database and sent on the next successful push.
+[push]
+# url = "http://192.0.2.10:8080/api/screentime"
+# token_file = "~/.config/screentime/token"   # or: token = "..." (or $SCREENTIME_TOKEN)
+# interval = 600          # seconds between pushes of today's running total
+# catch_up_days = 14

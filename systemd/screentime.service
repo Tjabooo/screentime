@@ -1,0 +1,14 @@
+[Unit]
+Description=Screen Time tracker for Hyprland
+Documentation=https://github.com/Tjabooo/screentime
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/screentime run
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
