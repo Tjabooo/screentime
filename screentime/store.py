@@ -94,7 +94,8 @@ class Store:
             'SELECT ts, reason FROM pickups WHERE ts >= ? AND ts < ? ORDER BY ts', (start, end))]
 
     def first_record(self):
-        row = self.db.execute('SELECT MIN(start) FROM sessions').fetchone()
+        """When tracking began: the first session or pickup (a machine can be locked all day)."""
+        row = self.db.execute('SELECT MIN(t) FROM (SELECT MIN(start) AS t FROM sessions UNION ALL SELECT MIN(ts) FROM pickups)').fetchone()
         return row[0]
 
     def pushed(self, day):

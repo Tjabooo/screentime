@@ -214,6 +214,11 @@ class PushTests(Base):
         self.assertEqual([d.isoformat() for d in due_days(self.store, self.config, at(13))], ['2026-11-04'])
 
 
+    def test_a_day_with_only_a_pickup_is_still_sent(self):
+        self.store.add_pickup(at(9), 'login')  # logged in, then locked all day
+        self.assertEqual([d.isoformat() for d in due_days(self.store, self.config, at(12))], ['2026-11-04'])
+
+
 class ProtocolTests(unittest.TestCase):
     def test_wayland_wire_format(self):
         payload = struct.pack('=I', 7) + wayland._string('wl_seat') + struct.pack('=I', 9)
