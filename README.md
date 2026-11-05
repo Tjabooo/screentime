@@ -70,9 +70,13 @@ systemctl --user status screentime
 
 | Key | Default | |
 | --- | --- | --- |
+| `device` | hostname | Name sent with pushes. |
+| `database` | `~/.local/share/screentime/screentime.db` | SQLite file (follows `$XDG_DATA_HOME`). |
 | `idle_timeout` | `180` | Seconds without input before the clock stops. |
 | `trim_idle` | `true` | Also take those idle seconds back off the session. |
 | `track_titles` | `false` | Store window titles as well as the app class. |
+| `poll_interval` | `5` | Seconds between lock / screen-off / suspend checks. |
+| `min_session` | `1.0` | Focus flashes shorter than this many seconds are dropped. |
 | `lockers` | `hyprlock`, `swaylock`, … | Processes that mean "locked". |
 | `ignore` | `[]` | Window classes (globs) that never count. |
 | `week_start` | `monday` | Or `sunday`. |
