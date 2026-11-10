@@ -33,7 +33,7 @@ SCREEN TIME  desktop  ·  Today, Wed 4 Nov
 - **Private by default:** stores the window class only. Window titles are saved only if you turn them on.
 - **`--json` output** for bars, widgets, dashboards and scripts.
 - **Optional push** of each day's summary to a URL with a token, queued in the database while you're offline, so a laptop catches up after sleep or once it's back home.
-- **No dependencies:** Python 3.11+ standard library only, SQLite storage, a systemd user service.
+- **Small and cheap:** one ~5 MB Rust binary, SQLite storage (built in), a systemd user service. About 7 MB of memory and next to no CPU while running.
 
 ## Install
 
@@ -43,11 +43,11 @@ cd screentime
 ./install.sh
 ```
 
-This copies the code to `~/.local/share/screentime/lib`, puts the `screentime` command in `~/.local/bin`, writes a commented config to `~/.config/screentime/config.toml` (if you don't have one), and enables `screentime.service` for your graphical session. Run `./install.sh` again to update and `./install.sh --uninstall` to remove it (your data stays).
+This builds the binary (`cargo build --release`), installs it to `~/.local/share/screentime/bin` and links the `screentime` command into `~/.local/bin`, writes a commented config to `~/.config/screentime/config.toml` (if you don't have one), and enables `screentime.service` for your graphical session. Run `./install.sh` again to update and `./install.sh --uninstall` to remove it (your data stays).
 
-It also installs with pip or pipx (`pipx install .`); then add the service yourself from `systemd/screentime.service`.
+To install a binary built elsewhere (same CPU architecture), run `SCREENTIME_BINARY=/path/to/screentime ./install.sh`. Upgrading from the Python version (0.1) keeps your database and config; the installer removes the old Python code.
 
-Requirements: Hyprland, Python 3.11 or newer, systemd. Your session should export `WAYLAND_DISPLAY` and `HYPRLAND_INSTANCE_SIGNATURE` to the systemd user manager (most Hyprland setups do; if not, add `exec-once = systemctl --user import-environment WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE`).
+Requirements: Hyprland, systemd, and Rust 1.85+ to build (Arch: `pacman -S rust`). Your session should export `WAYLAND_DISPLAY` and `HYPRLAND_INSTANCE_SIGNATURE` to the systemd user manager (most Hyprland setups do; if not, add `exec-once = systemctl --user import-environment WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE`).
 
 ## Usage
 
@@ -100,15 +100,16 @@ Today's summary is re-sent every `interval` seconds. A day counts as sent once a
 ## How it works
 
 - **Focus:** a connection to Hyprland's `.socket2.sock` delivers `activewindow>>class,title`; the request socket answers `j/activewindow` and `j/monitors` (for DPMS).
-- **Idle:** a ~100-line pure-Python Wayland client binds `wl_seat` and `ext_idle_notifier_v1` and asks for an idle notification after `idle_timeout`. `idled` stops the clock (and, with `trim_idle`, ends the session when input stopped); `resumed` starts it again.
-- **Lock, screen-off, suspend:** every `poll_interval` seconds it looks for a locker process in `/proc` and asks Hyprland whether any monitor is on. A jump between `CLOCK_BOOTTIME` and `CLOCK_MONOTONIC` means the machine was suspended; that time is cut out.
+- **Idle:** a tiny built-in Wayland client (no libwayland) binds `wl_seat` and `ext_idle_notifier_v1` and asks for an idle notification after `idle_timeout`. `idled` stops the clock (and, with `trim_idle`, ends the session when input stopped); `resumed` starts it again.
+- **Lock, screen-off, suspend:** at most every `poll_interval` seconds (not on every Hyprland event) it looks for a locker process in `/proc` (while locked, only the locker's own entry) and asks Hyprland whether any monitor is on. A jump between `CLOCK_BOOTTIME` and `CLOCK_MONOTONIC` means the machine was suspended; that time is cut out.
 - **Pickups:** coming back from locked, screen-off, suspended or a fresh login is a pickup. Coming back from a short idle with the screen still on isn't.
 - **Storage:** sessions (`app`, optional `title`, `start`, `end`) and pickups in SQLite (WAL) at `~/.local/share/screentime/screentime.db`. The running session is written every 15 seconds, so a crash loses at most that.
 
 ## Development
 
 ```sh
-python -m unittest discover -s tests -v
+cargo test
+cargo clippy --all-targets -- -D warnings
 ```
 
 ## License

@@ -12,7 +12,7 @@
 # ignore = []             # window classes (globs) never counted
 
 # Categories: glob patterns on the lower-cased window class. Yours are checked before the
-# built-in list (see screentime/config.py). Social, Games, Entertainment, Web, Development,
+# built-in list (see src/config.rs). Social, Games, Entertainment, Web, Development,
 # Productivity, Creativity, Education, Utilities, Other.
 [categories]
 # "steam_app_*" = "Games"
