@@ -69,6 +69,9 @@ fn parse_day(text: Option<&str>) -> Result<NaiveDate, String> {
 }
 
 fn main() -> ExitCode {
+    // `screentime today | head` should end quietly, like any other CLI, not panic on EPIPE.
+    // SAFETY: restoring the default SIGPIPE disposition before any threads exist.
+    unsafe { libc::signal(libc::SIGPIPE, libc::SIG_DFL) };
     let cli = Cli::parse();
     match run(cli) {
         Ok(code) => ExitCode::from(code as u8),
