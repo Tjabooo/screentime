@@ -1,4 +1,4 @@
-//! Optional push: POST each day's summary to a URL (for a dashboard such as Marquee).
+//! Optional push: POST each day's summary to a URL (for a dashboard such as Lilin).
 //!
 //! The queue is the database itself: a day stays "unsent" until a push succeeds after the day has
 //! ended, so a machine that was asleep or away from home catches up on the next successful push.
